@@ -1,6 +1,6 @@
 
 ; --------------------------------------------------------------
-; Writes "Hello, World!" to the console using only system calls.
+; Writes a loop to the console using only system calls.
 ; Runs on 64-bit x86 Linux only.
 ;
 ; By Jackson Naufal
