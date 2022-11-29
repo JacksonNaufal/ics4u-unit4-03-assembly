@@ -6,67 +6,81 @@
 ; By Jackson Naufal
 ; Version 1.0
 ; Since: 2022-11-22
-; --------------------------------------------------------------
+; -------------------------------------------------------------
 
-SYS_WR equ 1
-SYS_RD equ 0
-SYS_EXIT equ 60
-
-STDIN equ 0
-STOUT equ 1
+SYS_WRITE equ 1 ; write to _
+SYS_EXIT equ 60 ; end program
+STDOUT equ 1    ; standard output
 
 section .bss
-    ; variables
-    inp_len equ 3
-    inp     resb    inp_len
+  length equ 2     ; length                 
+  len resb length  ; hold numbers           
 
 section .data
-    ; constants
-    msg: db "Please input a 2 digit number: "
-    msgLen: equ $-msg
-    out: db 10, "You enterted: "
-    outLength: equ $-out
-    done: db 10, "Done!", 10
-    doneLen: equ $-done
-
+  newline: db 10                        ; new line      
+  newlineLen: equ $-newline             ; length of the new line
+  opening: db "Printing 0-9...", 10     ; first line
+  openingLen: equ $-opening             ; opening
+  done: db "Done.", 10                  ; second line            
+  doneLen: equ $-done                   ; length of done
 
 section .text
-    global _start
+  global_start:                         ; entry point
 
-    _start:
-        mov rax, SYS_WR
-        mov rdi, STOUT
-        mov rsi, msg
-        mov rdx, msgLen
-        syscall
+  _start:
+    ; prints the opening of the program
+    mov rax, SYS_WRITE
+    mov rdi, STDOUT
+    mov rsi, opening
+    mov rdx, openingLen
+    syscall
 
-        ; input
-        mov rax, SYS_RD
-        mov rdi, STDIN
-        mov rsi, inp
-        mov rdx, inp_len
-        syscall
-        
-        ; output
-        mov rax, SYS_WR
-        mov rdi, STOUT
-        mov rsi, out
-        mov rdx, outLength
-        syscall
+    ; prints the new line
+    mov rax, SYS_WRITE
+    mov rdi, STDOUT
+    mov rsi, newline
+    mov rdx, newlineLen
+    syscall
 
-        mov rax, SYS_WR
-        mov rdi, STOUT
-        mov rsi, inp
-        mov rdx, inp_len
-        syscall
+    mov r8, 48
 
-        mov rax, SYS_WR
-        mov rdi, STOUT
-        mov rsi, done
-        mov rdx, doneLen
-        syscall
+    loop:
+    mov [len], r8
 
-        ; exit
-        mov rbx, 0
-        mov rax, SYS_EXIT
-        syscall
+    inc r8
+
+    ; prints new line
+    mov rax, SYS_WRITE
+    mov rdi, STDOUT
+    mov rsi, len
+    mov rdx, length
+    syscall
+
+    mov rax, SYS_WRITE
+    mov rdi, STDOUT
+    mov rsi, newline
+    mov rdx, newlineLen
+    syscall
+
+    ; loop
+    cmp r8, 57
+    jle loop   
+
+    ; prints new line
+    mov rax, SYS_WRITE
+    mov rdi, STDOUT
+    mov rsi, newline
+    mov rdx, newlineLen
+    syscall
+
+    ; prints done
+    mov rax, SYS_WRITE        
+    mov rdi, STDOUT           
+    mov rsi,done            
+    mov rdx,doneLen           
+    syscall                   
+
+    ; ends the program
+    mov rax, SYS_EXIT
+    mov rdi, 0
+    syscall
